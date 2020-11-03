@@ -2,18 +2,19 @@ import os
 import pandas as pd
 
 class Randomizer:
-    def __init__(self, data_root: str, split_idx: str):
+    def __init__(self, data_root: str, split_date: str, ngram_range: tuple):
         """Partitions the data into training/test sets."""
-        self.data_root = data_root
-        self.split_idx = split_idx          
-
-        # Define variables that have not been specified
+        # Define variables that have not been specified.
         self.df = None
-        self.features = None
         self.train = None
         self.test = None
 
-    def preprocess_data(self):
+        self.data_root = data_root
+        self.split_date = split_date
+        self.ngram_range = ngram_range
+        self.data_list = self._get_data_list()
+
+    def _get_data_list(self, remove_nans=True):
         """
         Clean the dataframe prior to dividing into train and
         test sets. Doing so will ensure that the train and 
@@ -24,44 +25,70 @@ class Randomizer:
 
         # The first two columns of the dataset contains the labels
         # and the dates, while the other columns contains headlines.
-        self.features = self.df.iloc[:, 2:27]
+        features = self.df.iloc[:, 2:27]
 
         # Replace all numbers and punctuation found in text with spaces.
-        self.features.replace("^a-zA-Z", " ", regex=True, inplace=True)
+        features.replace("[^a-zA-Z]", " ", regex=True, inplace=True)
 
         # Rename the dataset column headers 
         cols = [str(i) for i in range(25)]
-        self.df.columns = cols
+        features.columns = cols
 
-        # Lower-case all text in each dataset column
+        # Lower-case all text in each dataset column.
         for col in cols:
-            self.df[col] = df[col].lower()
+            features[col] = features[col].str.lower()
 
-        # Concatenate all 25 top headlines for each date into a paragraph
-        headlines = []
-        for row in range(len(data.index)):
-            headlines.append(' '.join(i for i in data.iloc[row, 0:25]))
+        # Concatenate all 25 top headlines for each date into a paragraph.
+        # NOTE: A few of the headlines contain nan values.
+        data_list = []
+        if remove_nans:
+            for row in range(len(features.index)):
+                headline = "" 
+                for word in features.iloc[row, 0:25]:
+                    if not isinstance(word, str):
+                        continue 
+                    else:
+                        headline += " " + word
+                data_list.append(headline)
+        else:
+            for row in range(len(features.index)):
+                # The data set contains nan's, so they must be converted 
+                # into strings.
+                # TODO: Try removing nan's from the dataset rather than 
+                # converting them in strings.
+                data_list.append(' '.join(str(i) for i in features.iloc[row, 0:25]))
+        return data_list 
 
     def simple_label_partition(self):
+        for i in range(len(self.df['Date'])):
+            if self.df['Date'][i] == self.split_date:
+                split_idx = i
+                break
+
         """Partitions data by prespecified date."""
-        # The training data will consist of data before 2014-12-31
-        self.train = df[df['Date'] <= self.split_idx] 
-        # The test data will consist of data after 2014-12-31
-        self.test = df[df['Date'] > self.split_idx]
+        # The training data will consist of data before 2014-12-31.
+        self.train = self.df[self.df['Date'] <= split_idx] 
+        # The test data will consist of data after 2014-12-31.
+        self.test = self.df[self.df['Date'] > split_idx]
+
+def setup_randomforest_randomizer(data_root: str, split_idx: str, ngram_range: tuple):
+    randomizer = Randomizer(data_root, split_idx, ngram_range)
+    randomizer.simple_label_partition()
+    return randomizer
 
 
 def main():
     DATA_ROOT = 'Data.csv'
     N_GRAM_RANGE = (2, 2)
     N_ESTIMATORS = 200
-    SPLIT_IDX = '20141231'
+    SPLIT_IDX = '2014-12-31'
 
     # Load data 
     if not os.path.exists(DATA_ROOT):
         raise OSError("[ERROR]: Data root directory does not exist.")
     
     # Build the randomizer and sampler
-    data_randomizer = Randomizer(DATA_ROOT, SPLIT_IDX, N_GRAM_RANGE) 
+    data_randomizer = setup_randomforest_randomizer(DATA_ROOT, SPLIT_IDX, N_GRAM_RANGE) 
 
     # Preprocess data
     # Fit data into count vectorizer
