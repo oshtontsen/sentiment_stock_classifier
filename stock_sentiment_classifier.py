@@ -1,8 +1,14 @@
 import os
 import pandas as pd
+import randomizer 
+
+class BaselineClassifier():
+    def __init__(self):
+        pass
+
 
 class Randomizer:
-    def __init__(self, data_root: str, split_date: str, ngram_range: tuple):
+    def __init__(self, data_root: str, split_date: str):
         """Partitions the data into training/test sets."""
         # Define variables that have not been specified.
         self.df = None
@@ -11,7 +17,6 @@ class Randomizer:
 
         self.data_root = data_root
         self.split_date = split_date
-        self.ngram_range = ngram_range
         self.data_list = self._get_data_list()
 
     def _get_data_list(self, remove_nans=True):
@@ -67,14 +72,17 @@ class Randomizer:
 
         """Partitions data by prespecified date."""
         # The training data will consist of data before 2014-12-31.
-        self.train = self.df[self.df['Date'] <= split_idx] 
+        self.train = self.data_list[:split_idx] 
         # The test data will consist of data after 2014-12-31.
-        self.test = self.df[self.df['Date'] > split_idx]
+        self.test = self.data_list[split_idx:]
 
-def setup_randomforest_randomizer(data_root: str, split_idx: str, ngram_range: tuple):
-    randomizer = Randomizer(data_root, split_idx, ngram_range)
+def setup_randomforest_randomizer(data_root: str, split_idx: str):
+    randomizer = Randomizer(data_root, split_idx)
     randomizer.simple_label_partition()
     return randomizer
+
+def build_graph():
+    model = BaselineClassifier()
 
 
 def main():
@@ -90,8 +98,8 @@ def main():
     # Build the randomizer and sampler
     data_randomizer = setup_randomforest_randomizer(DATA_ROOT, SPLIT_IDX, N_GRAM_RANGE) 
 
-    # Preprocess data
     # Fit data into count vectorizer
+    model = build_graph()
 
 
     # Define the metrics object
