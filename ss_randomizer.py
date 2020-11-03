@@ -1,11 +1,14 @@
+import pandas as pd
 
 class Randomizer:
     def __init__(self, data_root: str, split_date: str):
         """Partitions the data into training/test sets."""
         # Define variables that have not been specified.
         self.df = None
-        self.train = None
-        self.test = None
+        self.train_features = None
+        self.train_labels = None
+        self.test_features = None
+        self.test_labels = None
 
         self.data_root = data_root
         self.split_date = split_date
@@ -64,9 +67,11 @@ class Randomizer:
 
         """Partitions data by prespecified date."""
         # The training data will consist of data before 2014-12-31.
-        self.train = self.data_list[:split_idx] 
+        self.train_features = self.data_list[:split_idx] 
+        self.train_labels = self.df.iloc[0:split_idx, 1] 
         # The test data will consist of data after 2014-12-31.
-        self.test = self.data_list[split_idx:]
+        self.test_features = self.data_list[split_idx:]
+        self.test_labels = self.df.iloc[split_idx:, 1] 
 
 def setup_randomforest_randomizer(data_root: str, split_idx: str):
     randomizer = Randomizer(data_root, split_idx)
