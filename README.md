@@ -1,0 +1,2 @@
+# sentiment_stock_classifier
+There is a saying that goes along the lines of "History repeats itself". This program shall put these infamous words to the test. By utilizing NLP, this classifier will be trained to predict stock price movements based on news headlines alone. The headlines used have been scraped from Yahoo Finance. The classifier will attempt to track the price movements of the Dow Jones Industrial Stock.
