@@ -17,7 +17,7 @@ def main():
     data_randomizer = ss_randomizer.setup_randomforest_randomizer(DATA_ROOT, SPLIT_IDX) 
 
     # Fit data into count vectorizer
-    model = build_graph(N_ESTIMATORS, NGRAM_RANGE)
+    model = ss_baseline.build_graph(N_ESTIMATORS, NGRAM_RANGE)
     print("[INFO]: Successfully built new classifier graph")
     X_train = model.countvector.fit_transform(data_randomizer.train_features)
     X_test = model.countvector.transform(data_randomizer.test_features)
@@ -31,8 +31,10 @@ def main():
     predictions = model.ss_classifier.predict(X_test)
 
     # Define the metrics object
-    metrics = vaildation_metrics.build_metrics(predictions, data_randomizer.test_labels)
-    metrics.print_confusion_matrix()
+    print("[INFO]: Building metrics object")
+    metrics = validation_metrics.build_metrics(predictions, data_randomizer.test_labels)
+    metrics.generate_confusion_matrix()
+    metrics.generate_report()
 
 
 if __name__ == "__main__":
