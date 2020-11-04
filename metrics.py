@@ -13,3 +13,6 @@ class Metrics():
 
     def print_confusion_matrix(self):
         print(sns.heatmap(self.cfn_matrix, annot=True))
+
+def build_metrics(predictions, test_labels):
+    return Metrics(predictions, test_labels)
