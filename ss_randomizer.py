@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 class Randomizer:
     def __init__(self, data_root: str, split_date: str):
         """Partitions the data into training/test sets."""
@@ -30,7 +31,7 @@ class Randomizer:
         # Replace all numbers and punctuation found in text with spaces.
         features.replace("[^a-zA-Z]", " ", regex=True, inplace=True)
 
-        # Rename the dataset column headers 
+        # Rename the dataset column headers
         cols = [str(i) for i in range(25)]
         features.columns = cols
 
@@ -43,35 +44,36 @@ class Randomizer:
         data_list = []
         if remove_nans:
             for row in range(len(features.index)):
-                headline = "" 
+                headline = ""
                 for word in features.iloc[row, 0:25]:
                     if not isinstance(word, str):
-                        continue 
+                        continue
                     else:
                         headline += " " + word
                 data_list.append(headline)
         else:
             for row in range(len(features.index)):
-                # The data set contains nan's, so they must be converted 
+                # The data set contains nan's, so they must be converted
                 # into strings.
-                # TODO: Try removing nan's from the dataset rather than 
+                # TODO: Try removing nan's from the dataset rather than
                 # converting them in strings.
-                data_list.append(' '.join(str(i) for i in features.iloc[row, 0:25]))
-        return data_list 
+                data_list.append(" ".join(str(i) for i in features.iloc[row, 0:25]))
+        return data_list
 
     def simple_label_partition(self):
-        for i in range(len(self.df['Date'])):
-            if self.df['Date'][i] == self.split_date:
+        for i in range(len(self.df["Date"])):
+            if self.df["Date"][i] == self.split_date:
                 split_idx = i
                 break
 
         """Partitions data by prespecified date."""
         # The training data will consist of data before 2014-12-31.
-        self.train_features = self.data_list[:split_idx] 
-        self.train_labels = self.df.iloc[0:split_idx, 1] 
+        self.train_features = self.data_list[:split_idx]
+        self.train_labels = self.df.iloc[0:split_idx, 1]
         # The test data will consist of data after 2014-12-31.
         self.test_features = self.data_list[split_idx:]
-        self.test_labels = self.df.iloc[split_idx:, 1] 
+        self.test_labels = self.df.iloc[split_idx:, 1]
+
 
 def setup_randomforest_randomizer(data_root: str, split_idx: str):
     randomizer = Randomizer(data_root, split_idx)

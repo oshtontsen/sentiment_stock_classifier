@@ -1,20 +1,21 @@
 import os
 import ss_baseline
-import ss_randomizer 
+import ss_randomizer
 import validation_metrics
 
+
 def main():
-    DATA_ROOT = 'Data.csv'
+    DATA_ROOT = "Data.csv"
     NGRAM_RANGE = (2, 2)
     N_ESTIMATORS = 200
-    SPLIT_IDX = '2014-12-31'
+    SPLIT_IDX = "2014-12-31"
 
-    # Load data 
+    # Load data
     if not os.path.exists(DATA_ROOT):
         raise OSError("[ERROR]: Data root directory does not exist.")
-    
+
     # Build the randomizer and sampler
-    data_randomizer = ss_randomizer.setup_randomforest_randomizer(DATA_ROOT, SPLIT_IDX) 
+    data_randomizer = ss_randomizer.setup_randomforest_randomizer(DATA_ROOT, SPLIT_IDX)
 
     # Fit data into count vectorizer
     model = ss_baseline.build_graph(N_ESTIMATORS, NGRAM_RANGE)
