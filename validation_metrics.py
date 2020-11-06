@@ -1,9 +1,15 @@
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score, f1_score
+from sklearn.metrics import (
+    classification_report,
+    confusion_matrix,
+    accuracy_score,
+    f1_score,
+)
 
-class Metrics():
+
+class Metrics:
     def __init__(self, predictions, test_labels):
         self.predictions = predictions
         self.test_labels = test_labels
@@ -16,7 +22,9 @@ class Metrics():
         # Confusion matrix displaying counts
         sns.heatmap(self.cfn_matrix, annot=True)
         # Confusion matrix displaying percentages
-        sns.heatmap(self.cfn_matrix / np.sum(cfn_matrix), annot=True, fmt='.2%', cmap='Blues')
+        sns.heatmap(
+            self.cfn_matrix / np.sum(cfn_matrix), annot=True, fmt=".2%", cmap="Blues"
+        )
         plt.show()
 
     def generate_report(self):
